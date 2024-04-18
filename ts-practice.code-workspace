@@ -2,7 +2,10 @@
 	"folders": [
 		{
 			"path": "."
-		}
+		},
+		{
+			"path": "../ts-practice.wiki"
+		},
 	],
 	"settings": {
         "files.encoding": "utf8",
