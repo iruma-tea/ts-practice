@@ -12,5 +12,9 @@
         "workbench.iconTheme": "vscode-icons",
         "workbench.colorTheme": "Monokai",
         "files.eol": "\n",
+		"[typescript]": {
+			"editor.defaultFormatter": "vscode.typescript-language-features",
+			"editor.formatOnSave": true,
+		}
     }
 }
