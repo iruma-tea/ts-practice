@@ -29,9 +29,10 @@
         @bound
         @logged("[INFO]:")
         greet() {
-            console.log(`Hello, my name is ${this.name}.`)
+            console.log(`Hello, my name is ${this.name}`);
         }
     }
-    const person = new Person("Jhon")
+
+    const person = new Person("John");
     person.greet();
 }
