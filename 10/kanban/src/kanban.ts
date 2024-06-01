@@ -9,6 +9,12 @@ interface Task {
     description?: string;
 }
 
+interface ClickableElement {
+    element: HTMLElement;
+    clickHandler(event: MouseEvent): void;
+    bindEvents(): void;
+}
+
 class TaskForm {
     element: HTMLFormElement;
     titleInputEl: HTMLInputElement;
@@ -48,7 +54,7 @@ class TaskForm {
         /**
          * 後ほど、Taskオブジェクトを使ってリストアイテムを作成する処理を実装
          */
-        const item = new TaskItem("#task-item-template", task);
+        const item = new TaskItem(task);
         item.mount("#todo");
 
         this.clearInputs();
@@ -60,24 +66,16 @@ class TaskForm {
     }
 }
 
-class TaskList {
+abstract class UIComponent<T extends HTMLElement> {
     templateEl: HTMLTemplateElement;
-    element: HTMLDivElement;
-    private taskStatus: TaskStatus;
+    element: T;
 
-    constructor(templateId: string, _taskStatus: TaskStatus) {
-        // ターゲットのtemplate要素を取得
+    constructor(templateId: string) {
         this.templateEl = document.querySelector(templateId)!;
 
-        // template要素を複製
         const clone = this.templateEl.content.cloneNode(true) as DocumentFragment;
 
-        // template要素の子要素を取得
-        this.element = clone.firstElementChild as HTMLDivElement;
-
-        this.taskStatus = _taskStatus;
-
-        this.setup();
+        this.element = clone.firstElementChild as T;
     }
 
     mount(selector: string) {
@@ -85,6 +83,15 @@ class TaskList {
         targetEl.insertAdjacentElement("beforeend", this.element);
     }
 
+    abstract setup(): void;
+}
+
+class TaskList extends UIComponent<HTMLDivElement> {
+    constructor(private taskStatus: TaskStatus) {
+        super("#task-list-template");
+
+        this.setup();
+    }
     setup() {
         this.element.querySelector("h2")!.textContent = `${this.taskStatus}`;
         // 挿入した要素の子要素のリストにidを設定
@@ -92,36 +99,21 @@ class TaskList {
     }
 }
 
-function isTaskStatus(value: any): value is TaskStatus {
-    return TASK_STATUS.includes(value);
-}
+// function isTaskStatus(value: any): value is TaskStatus {
+//     return TASK_STATUS.includes(value);
+// }
 
-class TaskItem {
-    templateEl: HTMLTemplateElement;
-    element: HTMLLIElement;
+class TaskItem extends UIComponent<HTMLElement> implements ClickableElement {
     task: Task;
 
-    constructor(templateId: string, _task: Task) {
-        // ターゲットのtemplate要素を取得
-        this.templateEl = document.querySelector(templateId)!;
-
-        // template要素を複製
-        const clone = this.templateEl.content.cloneNode(true) as DocumentFragment;
-
-        // template要素の子要素を取得
-        this.element = clone.firstElementChild as HTMLLIElement;
+    constructor(_task: Task) {
+        super("#task-item-template");
 
         this.task = _task;
 
         this.setup();
 
-        // this.elementにイベントリスナを追加する。
         this.bindEvents();
-    }
-
-    mount(selector: string) {
-        const targetEl = document.querySelector(selector)!;
-        targetEl.insertAdjacentElement("beforeend", this.element);
     }
 
     setup() {
@@ -170,6 +162,6 @@ new TaskForm();
 
 // タスクリストの生成
 TASK_STATUS.forEach((status) => {
-    const list = new TaskList("#task-list-template", status);
+    const list = new TaskList(status);
     list.mount("#container");
 });
