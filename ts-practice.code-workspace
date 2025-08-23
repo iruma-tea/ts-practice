@@ -15,6 +15,7 @@
     "files.eol": "\n",
     "[typescript]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "liveServer.settings.multiRootWorkspaceName": "ts-practice"
   }
 }
